@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>A Little Encouragement</title>
+<style>
+  :root{
+    --bg:#f4f8f7;
+    --card:#ffffff;
+    --text:#1f2d2b;
+    --muted:#5b6b68;
+    --good:#2f9e6e;
+    --good-bg:#e7f7ef;
+    --okay:#3f7fb0;
+    --okay-bg:#e8f2fa;
+    --bad:#8a6bbf;
+    --bad-bg:#f1ecfa;
+    --accent:#2f9e6e;
+    --radius:20px;
+    --shadow:0 6px 20px rgba(31,45,43,0.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;padding:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    min-height:100%;
+  }
+  .wrap{
+    max-width:520px;
+    margin:0 auto;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:28px 20px 40px;
+  }
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:32px 24px;
+    text-align:center;
+  }
+  h1{
+    font-size:1.5rem;
+    line-height:1.35;
+    margin:0 0 8px;
+    font-weight:700;
+    color:var(--text);
+  }
+  .sub{
+    font-size:1.05rem;
+    color:var(--muted);
+    margin:0 0 28px;
+  }
+  .choices{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  .choice-btn{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    width:100%;
+    padding:20px 22px;
+    font-size:1.15rem;
+    font-weight:600;
+    border-radius:16px;
+    border:2px solid transparent;
+    background:#f0f4f3;
+    color:var(--text);
+    cursor:pointer;
+    transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+    text-align:left;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .choice-btn:active{transform:scale(0.97);}
+  .choice-btn .emoji{font-size:2rem;flex-shrink:0;}
+  .choice-btn.good:hover, .choice-btn.good:focus{background:var(--good-bg);border-color:var(--good);}
+  .choice-btn.okay:hover, .choice-btn.okay:focus{background:var(--okay-bg);border-color:var(--okay);}
+  .choice-btn.bad:hover, .choice-btn.bad:focus{background:var(--bad-bg);border-color:var(--bad);}
+
+  .screen{display:none;}
+  .screen.active{display:block;}
+
+  .msg-icon{font-size:2.6rem;margin-bottom:10px;}
+  .msg-title{
+    font-size:1.1rem;
+    color:var(--muted);
+    margin:0 0 18px;
+    font-weight:600;
+  }
+  .message-box{
+    border-radius:16px;
+    padding:26px 20px;
+    margin-bottom:26px;
+    min-height:110px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .message-box p{
+    font-size:1.3rem;
+    line-height:1.5;
+    margin:0;
+    font-weight:600;
+  }
+  .message-box.good{background:var(--good-bg);color:#1c6b48;}
+  .message-box.okay{background:var(--okay-bg);color:#26567a;}
+  .message-box.bad{background:var(--bad-bg);color:#5a4487;}
+
+  .big-btn{
+    width:100%;
+    padding:18px;
+    font-size:1.1rem;
+    font-weight:700;
+    border-radius:16px;
+    border:none;
+    cursor:pointer;
+    margin-bottom:14px;
+    transition:transform .12s ease, opacity .12s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .big-btn:active{transform:scale(0.97);}
+  .btn-primary.good{background:var(--good);color:#fff;}
+  .btn-primary.okay{background:var(--okay);color:#fff;}
+  .btn-primary.bad{background:var(--bad);color:#fff;}
+  .btn-secondary{
+    background:transparent;
+    color:var(--muted);
+    border:2px solid #dfe6e4;
+    font-weight:600;
+  }
+
+  .note{
+    margin-top:18px;
+    padding:16px 18px;
+    background:#fbf6ea;
+    border-radius:14px;
+    font-size:0.92rem;
+    line-height:1.5;
+    color:#6b5b30;
+    text-align:left;
+  }
+  .note b{display:block;margin-bottom:4px;color:#4a3d1f;}
+
+  footer{
+    text-align:center;
+    color:var(--muted);
+    font-size:0.8rem;
+    margin-top:22px;
+  }
+
+  @media (min-width:600px){
+    h1{font-size:1.7rem;}
+    .message-box p{font-size:1.4rem;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- SCREEN 1: Feeling selection -->
+  <div id="screen-select" class="screen active">
+    <div class="card">
+      <h1>How are you feeling today?</h1>
+      <p class="sub">Choose the one that feels closest to you right now.</p>
+      <div class="choices">
+        <button class="choice-btn good" onclick="chooseFeeling('good')">
+          <span class="emoji">😊</span><span>I feel good today</span>
+        </button>
+        <button class="choice-btn okay" onclick="chooseFeeling('okay')">
+          <span class="emoji">😐</span><span>I feel okay today</span>
+        </button>
+        <button class="choice-btn bad" onclick="chooseFeeling('bad')">
+          <span class="emoji">😔</span><span>I feel bad today</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: Message -->
+  <div id="screen-message" class="screen">
+    <div class="card">
+      <div class="msg-icon" id="msg-emoji">😊</div>
+      <p class="msg-title">A little encouragement for you today...</p>
+      <div class="message-box" id="message-box">
+        <p id="message-text">—</p>
+      </div>
+      <button class="big-btn btn-primary" id="another-btn" onclick="showAnother()">Give me another message 💬</button>
+      <button class="big-btn btn-secondary" onclick="goBack()">Choose another feeling</button>
+
+      <div class="note" id="care-note">
+        <b>A gentle reminder</b>
+        It's okay to have difficult days. If you are feeling overwhelmed or need help, please talk to your healthcare team or someone you trust.
+      </div>
+    </div>
+    <footer>This tool offers emotional encouragement only. It is not a medical diagnosis or treatment.</footer>
+  </div>
+
+</div>
+
+<script>
+const messages = {
+  good: [
+    "You showed up today. That matters.",
+    "Every small step is real progress.",
+    "You're building strength, one day at a time.",
+    "Your hard work is paying off.",
+    "Feeling good today is worth celebrating.",
+    "You're doing better than you think.",
+    "Keep going — you're on the right path.",
+    "Today's effort is a gift to tomorrow's you.",
+    "Your determination is inspiring.",
+    "Small wins add up to big changes.",
+    "You are stronger than yesterday.",
+    "This good day is a sign of your progress.",
+    "Celebrate this moment — you earned it.",
+    "Your consistency is making a difference.",
+    "Great days like this reflect your effort.",
+    "You're moving forward, and that counts.",
+    "Trust the progress you're making.",
+    "Your positive energy today is wonderful.",
+    "Keep up the great work, one day at a time.",
+    "You have every reason to feel proud.",
+    "This is what progress looks like.",
+    "Your journey is moving in a good direction.",
+    "Nice work today — truly.",
+    "You're proving to yourself what you can do.",
+    "Enjoy this good day — you've earned it.",
+    "Your effort today matters more than you know.",
+    "Keep believing in your progress.",
+    "This good feeling reflects real growth.",
+    "You're doing wonderfully — keep it up.",
+    "A good day like this deserves recognition."
+  ],
+  okay: [
+    "It's okay to just take today as it comes.",
+    "Small steps still count.",
+    "Recovery has its own pace — yours is fine.",
+    "One step at a time is enough.",
+    "Steady is good. There's no rush.",
+    "You don't need a perfect day to make progress.",
+    "Consistency matters more than speed.",
+    "It's fine to feel just okay — that's real too.",
+    "Every day you try is a good day.",
+    "Progress can be quiet, and that's alright.",
+    "You're doing enough, just as you are.",
+    "Take today gently, one moment at a time.",
+    "An okay day is still a day moving forward.",
+    "There's no need to rush your recovery.",
+    "Small, steady steps lead somewhere good.",
+    "You're allowed to have an ordinary day.",
+    "Patience with yourself is part of healing.",
+    "This is your pace, and that's okay.",
+    "You don't have to feel amazing to be doing well.",
+    "Keep showing up — that's what counts.",
+    "It's okay to move slowly today.",
+    "Steady effort adds up over time.",
+    "You're exactly where you need to be right now.",
+    "An okay day is still worth something.",
+    "Take it easy — tomorrow is another chance.",
+    "You're allowed to simply get through today.",
+    "Small, calm steps are still steps forward.",
+    "There's no pressure to feel more than okay.",
+    "Being consistent matters more than being perfect.",
+    "You're doing just fine, one day at a time."
+  ],
+  bad: [
+    "It's okay to have a hard day. You're not alone.",
+    "Difficult days are a normal part of recovery.",
+    "This hard day doesn't erase your progress.",
+    "Be gentle with yourself today.",
+    "You don't have to feel strong every single day.",
+    "It's okay to rest when you need to.",
+    "This feeling won't last forever.",
+    "You are not to blame for how you feel today.",
+    "It's alright to simply get through today.",
+    "Hard days happen — they don't define your recovery.",
+    "You deserve kindness, especially today.",
+    "It's okay to slow down and just breathe.",
+    "You don't need to push yourself today.",
+    "Rest is part of healing too.",
+    "Tough days don't mean you're failing.",
+    "It's okay to feel however you feel right now.",
+    "You're allowed to have a bad day.",
+    "This moment is hard, but it will pass.",
+    "Take all the time you need to rest.",
+    "You are doing your best, and that's enough.",
+    "It's okay to lean on others today.",
+    "Your worth isn't measured by today's feelings.",
+    "Be as kind to yourself as you would to a friend.",
+    "This hard day is not a setback in who you are.",
+    "It's alright to simply rest and try again later.",
+    "You don't have to face this alone.",
+    "Difficult moments don't cancel out your effort.",
+    "It's okay to just breathe and take it slow today.",
+    "Give yourself permission to rest today.",
+    "Tomorrow can be different — for now, be gentle with yourself."
+  ]
+};
+
+const emojiFor = { good: "😊", okay: "😐", bad: "😔" };
+let currentFeeling = null;
+let lastIndex = -1;
+
+function pickMessage(feeling){
+  const list = messages[feeling];
+  let idx;
+  do { idx = Math.floor(Math.random() * list.length); }
+  while (list.length > 1 && idx === lastIndex);
+  lastIndex = idx;
+  return list[idx];
+}
+
+function chooseFeeling(feeling){
+  currentFeeling = feeling;
+  lastIndex = -1;
+  document.getElementById('msg-emoji').textContent = emojiFor[feeling];
+
+  const box = document.getElementById('message-box');
+  box.className = 'message-box ' + feeling;
+  document.getElementById('message-text').textContent = pickMessage(feeling);
+
+  const btn = document.getElementById('another-btn');
+  btn.className = 'big-btn btn-primary ' + feeling;
+
+  document.getElementById('care-note').style.display = (feeling === 'bad') ? 'block' : 'block';
+
+  document.getElementById('screen-select').classList.remove('active');
+  document.getElementById('screen-message').classList.add('active');
+}
+
+function showAnother(){
+  document.getElementById('message-text').textContent = pickMessage(currentFeeling);
+}
+
+function goBack(){
+  document.getElementById('screen-message').classList.remove('active');
+  document.getElementById('screen-select').classList.add('active');
+}
+</script>
+</body>
+</html>
